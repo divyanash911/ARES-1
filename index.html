@@ -10,7 +10,6 @@
   :root {
     --mars-red:    #c0392b;
     --mars-orange: #e67e22;
-    --mars-dust:   #b5651d;
     --glow-green:  #00ff88;
     --glow-cyan:   #00d4ff;
     --glow-amber:  #ffb347;
@@ -37,7 +36,6 @@
     overflow-x: hidden;
   }
 
-  /* Starfield background */
   body::before {
     content: '';
     position: fixed; inset: 0;
@@ -47,15 +45,9 @@
       radial-gradient(1px 1px at 60% 80%, rgba(255,255,255,0.35) 0%, transparent 100%),
       radial-gradient(1px 1px at 30% 70%, rgba(255,255,255,0.25) 0%, transparent 100%),
       radial-gradient(1px 1px at 90% 50%, rgba(255,255,255,0.3) 0%, transparent 100%),
-      radial-gradient(1px 1px at 5%  90%, rgba(255,255,255,0.2) 0%, transparent 100%),
-      radial-gradient(1px 1px at 70% 40%, rgba(255,255,255,0.3) 0%, transparent 100%),
-      radial-gradient(2px 2px at 45% 55%, rgba(255,220,180,0.3) 0%, transparent 100%),
-      radial-gradient(1px 1px at 20% 45%, rgba(255,255,255,0.2) 0%, transparent 100%);
-    pointer-events: none;
-    z-index: 0;
+      radial-gradient(2px 2px at 45% 55%, rgba(255,220,180,0.3) 0%, transparent 100%);
+    pointer-events: none; z-index: 0;
   }
-
-  /* Mars horizon glow */
   body::after {
     content:'';
     position:fixed; bottom:0; left:0; right:0; height:200px;
@@ -70,253 +62,237 @@
     display:flex; align-items:center; justify-content:space-between;
     padding:12px 20px; margin-bottom:16px;
     background: linear-gradient(90deg, rgba(192,57,43,0.15) 0%, rgba(10,15,30,0.8) 100%);
-    border: 1px solid rgba(192,57,43,0.3);
-    border-radius:6px;
+    border: 1px solid rgba(192,57,43,0.3); border-radius:6px;
     backdrop-filter: blur(10px);
   }
-  .logo {
-    font-family: var(--font-display); font-size:1.5rem; font-weight:900;
-    color: var(--mars-orange);
-    text-shadow: 0 0 20px rgba(230,126,34,0.6);
-    letter-spacing:4px;
-  }
-  .logo span { color: var(--text-dim); font-size:0.7rem; display:block; letter-spacing:6px; font-weight:400; }
+  .logo { font-family:var(--font-display); font-size:1.5rem; font-weight:900; color:var(--mars-orange); text-shadow:0 0 20px rgba(230,126,34,0.6); letter-spacing:4px; }
+  .logo span { color:var(--text-dim); font-size:0.7rem; display:block; letter-spacing:6px; font-weight:400; }
   .status-bar { display:flex; gap:20px; align-items:center; }
-  .sim-clock {
-    font-family: var(--font-mono); color: var(--glow-cyan);
-    font-size:0.85rem; text-shadow:0 0 10px rgba(0,212,255,0.5);
-  }
-  .conn-dot {
-    width:8px; height:8px; border-radius:50%;
-    background: var(--glow-green);
-    box-shadow: 0 0 8px var(--glow-green);
-    animation: pulse-dot 2s infinite;
-  }
-  .conn-dot.offline { background: var(--glow-red); box-shadow:0 0 8px var(--glow-red); }
+  .sim-clock { font-family:var(--font-mono); color:var(--glow-cyan); font-size:0.85rem; text-shadow:0 0 10px rgba(0,212,255,0.5); }
+  .conn-dot { width:8px; height:8px; border-radius:50%; background:var(--glow-green); box-shadow:0 0 8px var(--glow-green); animation:pulse-dot 2s infinite; }
+  .conn-dot.offline { background:var(--glow-red); box-shadow:0 0 8px var(--glow-red); }
   @keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+  /* Mission status pill in header */
+  .mission-pill {
+    padding:4px 12px; border-radius:3px; font-family:var(--font-display);
+    font-size:0.65rem; font-weight:700; letter-spacing:2px; transition:all 0.3s;
+  }
+  .mission-NOMINAL  { background:rgba(0,255,136,0.1); color:var(--glow-green); border:1px solid rgba(0,255,136,0.3); }
+  .mission-WARNING  { background:rgba(255,179,71,0.15); color:var(--glow-amber); border:1px solid rgba(255,179,71,0.4); animation:warn-pulse 2s infinite; }
+  .mission-CRITICAL { background:rgba(255,68,68,0.15); color:var(--glow-red); border:1px solid rgba(255,68,68,0.5); animation:warn-pulse 0.8s infinite; }
+  .mission-FAILED   { background:rgba(192,57,43,0.3); color:#ff6666; border:1px solid #c0392b; }
+  @keyframes warn-pulse { 0%,100%{box-shadow:none} 50%{box-shadow:0 0 12px currentColor} }
 
   /* ── Grid ── */
   .grid {
     display:grid;
     grid-template-columns: 2fr 1fr;
-    grid-template-rows: auto auto auto;
     gap:14px;
   }
-  @media(max-width:900px){ .grid{ grid-template-columns:1fr; } }
+  .col-left  { display:flex; flex-direction:column; gap:14px; }
+  .col-right { display:flex; flex-direction:column; gap:14px; }
+  @media(max-width:900px){ .grid{grid-template-columns:1fr;} }
 
-  /* ── Panel base ── */
+  /* ── Panel ── */
   .panel {
-    background: var(--bg-panel);
-    border: 1px solid var(--border);
-    border-radius:8px; padding:16px;
-    position:relative; overflow:hidden;
+    background:var(--bg-panel); border:1px solid var(--border);
+    border-radius:8px; padding:16px; position:relative; overflow:hidden;
   }
   .panel::before {
     content:''; position:absolute; top:0; left:0; right:0; height:2px;
-    background: linear-gradient(90deg, transparent, var(--mars-orange), transparent);
-    opacity:0.5;
+    background:linear-gradient(90deg,transparent,var(--mars-orange),transparent); opacity:0.5;
   }
   .panel-title {
-    font-family: var(--font-display); font-size:0.65rem; font-weight:700;
-    letter-spacing:3px; color: var(--text-dim); text-transform:uppercase;
+    font-family:var(--font-display); font-size:0.65rem; font-weight:700;
+    letter-spacing:3px; color:var(--text-dim); text-transform:uppercase;
     margin-bottom:14px; display:flex; align-items:center; gap:8px;
   }
-  .panel-title::after {
-    content:''; flex:1; height:1px;
-    background: linear-gradient(90deg, var(--border), transparent);
-  }
+  .panel-title::after { content:''; flex:1; height:1px; background:linear-gradient(90deg,var(--border),transparent); }
 
-  /* ── Vitals ── */
+  /* ── Vitals grid ── */
   .vitals-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
 
   .vital-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius:6px; padding:14px;
-    position:relative; overflow:hidden;
-    transition: border-color 0.3s;
+    background:var(--bg-card); border:1px solid var(--border);
+    border-radius:6px; padding:14px; position:relative; overflow:hidden;
+    transition:border-color 0.3s;
   }
-  .vital-card.warning { border-color: rgba(255,179,71,0.5); }
-  .vital-card.critical { border-color: rgba(255,68,68,0.6); animation: critical-flash 1s infinite; }
+  .vital-card.warning  { border-color:rgba(255,179,71,0.5); }
+  .vital-card.critical { border-color:rgba(255,68,68,0.6); animation:critical-flash 1s infinite; }
   @keyframes critical-flash { 0%,100%{box-shadow:none} 50%{box-shadow:0 0 15px rgba(255,68,68,0.3)} }
 
-  .vital-label {
-    font-family: var(--font-mono); font-size:0.7rem; color: var(--text-dim);
-    letter-spacing:2px; margin-bottom:6px;
-  }
-  .vital-value {
-    font-family: var(--font-display); font-size:2rem; font-weight:900;
-    line-height:1; transition: color 0.3s;
-  }
-  .vital-value.ok     { color: var(--glow-green); text-shadow:0 0 15px rgba(0,255,136,0.4); }
-  .vital-value.warn   { color: var(--glow-amber); text-shadow:0 0 15px rgba(255,179,71,0.4); }
-  .vital-value.danger { color: var(--glow-red);   text-shadow:0 0 15px rgba(255,68,68,0.6); }
+  .vital-label { font-family:var(--font-mono); font-size:0.7rem; color:var(--text-dim); letter-spacing:2px; margin-bottom:6px; }
+  .vital-value { font-family:var(--font-display); font-size:2rem; font-weight:900; line-height:1; transition:color 0.3s; }
+  .vital-value.ok     { color:var(--glow-green); text-shadow:0 0 15px rgba(0,255,136,0.4); }
+  .vital-value.warn   { color:var(--glow-amber); text-shadow:0 0 15px rgba(255,179,71,0.4); }
+  .vital-value.danger { color:var(--glow-red);   text-shadow:0 0 15px rgba(255,68,68,0.6); }
 
-  .vital-bar-wrap { margin-top:8px; height:4px; background: rgba(255,255,255,0.05); border-radius:2px; }
-  .vital-bar {
-    height:100%; border-radius:2px;
-    transition: width 0.5s ease, background 0.3s;
-  }
+  .vital-bar-wrap { margin-top:8px; height:4px; background:rgba(255,255,255,0.05); border-radius:2px; }
+  .vital-bar { height:100%; border-radius:2px; transition:width 0.5s ease, background 0.3s; }
 
-  .vital-threshold {
-    font-family: var(--font-mono); font-size:0.62rem; color: var(--text-dim);
-    margin-top:4px;
+  /* Grace countdown on vital card */
+  .grace-countdown {
+    margin-top:6px; font-family:var(--font-mono); font-size:0.65rem;
+    color:var(--glow-red); display:none;
   }
+  .grace-countdown.visible { display:block; animation:countdown-flash 0.5s infinite; }
+  @keyframes countdown-flash { 0%,100%{opacity:1} 50%{opacity:0.5} }
 
-  /* ── Event Banner ── */
+  .vital-threshold { font-family:var(--font-mono); font-size:0.62rem; color:var(--text-dim); margin-top:4px; }
+
+  /* ── Event banner ── */
   .event-banner {
-    padding:10px 16px;
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius:6px;
-    display:flex; align-items:center; gap:12px;
-    margin-bottom:0;
-    transition: all 0.3s;
+    padding:10px 16px; background:var(--bg-card); border:1px solid var(--border);
+    border-radius:6px; display:flex; align-items:center; gap:12px; transition:all 0.3s;
   }
-  .event-banner.active-event {
-    border-color: rgba(255,179,71,0.6);
-    background: rgba(255,179,71,0.05);
-    animation: event-pulse 2s infinite;
-  }
-  .event-banner.critical-event {
-    border-color: rgba(255,68,68,0.6);
-    background: rgba(255,68,68,0.05);
-    animation: event-pulse 0.8s infinite;
-  }
-  @keyframes event-pulse {
-    0%,100%{box-shadow:none}
-    50%{box-shadow:0 0 20px rgba(255,179,71,0.2)}
-  }
+  .event-banner.active-event   { border-color:rgba(255,179,71,0.6); background:rgba(255,179,71,0.05); animation:event-pulse 2s infinite; }
+  .event-banner.critical-event { border-color:rgba(255,68,68,0.6); background:rgba(255,68,68,0.05); animation:event-pulse 0.8s infinite; }
+  .event-banner.breach-event   { border-color:rgba(192,57,43,0.9); background:rgba(192,57,43,0.1); animation:breach-strobe 0.4s infinite; }
+  @keyframes event-pulse  { 0%,100%{box-shadow:none} 50%{box-shadow:0 0 20px rgba(255,179,71,0.2)} }
+  @keyframes breach-strobe{ 0%,100%{opacity:1} 50%{opacity:0.7} }
   .event-icon { font-size:1.5rem; min-width:30px; text-align:center; }
-  .event-name {
-    font-family: var(--font-display); font-size:0.75rem; font-weight:700;
-    letter-spacing:2px; color: var(--glow-amber);
-  }
-  .event-detail { font-size:0.78rem; color: var(--text-dim); }
+  .event-name { font-family:var(--font-display); font-size:0.75rem; font-weight:700; letter-spacing:2px; color:var(--glow-amber); }
+  .event-detail { font-size:0.78rem; color:var(--text-dim); }
   .event-progress-wrap { flex:1; height:3px; background:rgba(255,255,255,0.05); border-radius:2px; }
-  .event-progress { height:100%; background: var(--glow-amber); border-radius:2px; transition: width 0.5s; }
+  .event-progress { height:100%; background:var(--glow-amber); border-radius:2px; transition:width 0.5s; }
+
+  /* ── Crew panel ── */
+  .crew-grid { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px; }
+  .crew-member {
+    width:40px; height:48px; border-radius:6px; border:1px solid var(--border);
+    background:var(--bg-card); display:flex; flex-direction:column;
+    align-items:center; justify-content:center; font-size:1.2rem;
+    transition:all 0.5s; position:relative;
+  }
+  .crew-member.alive { border-color:rgba(0,255,136,0.3); }
+  .crew-member.dying { border-color:rgba(255,68,68,0.8); animation:crew-dying 0.5s infinite; }
+  .crew-member.dead  { filter:grayscale(1); opacity:0.25; border-color:rgba(100,100,100,0.2); }
+  @keyframes crew-dying { 0%,100%{background:var(--bg-card)} 50%{background:rgba(255,68,68,0.15)} }
+  .crew-status-label { font-size:0.45rem; font-family:var(--font-mono); color:var(--text-dim); letter-spacing:1px; margin-top:2px; }
+  .crew-member.dying .crew-status-label { color:var(--glow-red); }
 
   /* ── Infrastructure ── */
   .infra-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
   .infra-item { background:var(--bg-card); border:1px solid var(--border); border-radius:6px; padding:12px; }
   .infra-item-label { font-size:0.65rem; font-family:var(--font-mono); color:var(--text-dim); letter-spacing:2px; margin-bottom:6px; }
-  .infra-dots { display:flex; gap:6px; margin-top:4px; }
+  .infra-dots { display:flex; gap:5px; margin-top:4px; flex-wrap:wrap; }
   .infra-dot { width:16px; height:16px; border-radius:3px; border:1px solid var(--border); transition:all 0.3s; }
-  .infra-dot.active { background:var(--glow-green); border-color:var(--glow-green); box-shadow:0 0 8px rgba(0,255,136,0.4); }
+  .infra-dot.active   { background:var(--glow-green); border-color:var(--glow-green); box-shadow:0 0 8px rgba(0,255,136,0.4); }
   .infra-dot.inactive { background:transparent; }
-  .mode-pill {
-    display:inline-block; padding:3px 10px; border-radius:3px;
-    font-family:var(--font-mono); font-size:0.7rem; letter-spacing:1px;
-    font-weight:600;
-  }
+  .infra-dot.offline  { background:rgba(255,68,68,0.3); border-color:rgba(255,68,68,0.5); }
+  .mode-pill { display:inline-block; padding:3px 10px; border-radius:3px; font-family:var(--font-mono); font-size:0.7rem; letter-spacing:1px; font-weight:600; }
   .mode-NORMAL      { background:rgba(0,255,136,0.15); color:var(--glow-green); border:1px solid rgba(0,255,136,0.3); }
   .mode-CONSERVATION{ background:rgba(255,179,71,0.15); color:var(--glow-amber); border:1px solid rgba(255,179,71,0.3); }
   .mode-EMERGENCY   { background:rgba(255,68,68,0.15); color:var(--glow-red); border:1px solid rgba(255,68,68,0.3); }
-  .priority-pill {
-    display:inline-block; padding:3px 10px; border-radius:3px;
-    font-family:var(--font-mono); font-size:0.7rem; letter-spacing:1px;
-    background:rgba(0,212,255,0.1); color:var(--glow-cyan); border:1px solid rgba(0,212,255,0.2);
-  }
+  .priority-pill { display:inline-block; padding:3px 10px; border-radius:3px; font-family:var(--font-mono); font-size:0.7rem; letter-spacing:1px; background:rgba(0,212,255,0.1); color:var(--glow-cyan); border:1px solid rgba(0,212,255,0.2); }
 
-  /* ── Performance ── */
+  /* ── Perf ── */
   .perf-row { display:flex; justify-content:space-between; align-items:center; padding:8px 0; border-bottom:1px solid var(--border); }
   .perf-row:last-child { border-bottom:none; }
   .perf-label { font-size:0.75rem; color:var(--text-dim); font-family:var(--font-mono); }
   .perf-value { font-family:var(--font-display); font-size:1rem; color:var(--glow-cyan); }
-  .perf-value.bad { color: var(--glow-red); }
+  .perf-value.bad { color:var(--glow-red); }
 
   /* ── Action Panel ── */
-  .actions-panel { grid-column: 2; grid-row: 1 / 4; }
-  @media(max-width:900px){ .actions-panel{ grid-column:1; grid-row:auto; } }
-
-  .action-group { margin-bottom:18px; }
-  .action-group-title {
-    font-size:0.62rem; font-family:var(--font-mono); color:var(--text-dim);
-    letter-spacing:2px; text-transform:uppercase; margin-bottom:8px;
-    padding-bottom:4px; border-bottom:1px solid var(--border);
-  }
-
+  .action-group { margin-bottom:16px; }
+  .action-group-title { font-size:0.62rem; font-family:var(--font-mono); color:var(--text-dim); letter-spacing:2px; text-transform:uppercase; margin-bottom:8px; padding-bottom:4px; border-bottom:1px solid var(--border); }
   .btn-row { display:flex; gap:6px; flex-wrap:wrap; }
-  .btn {
-    padding:7px 12px; border:1px solid var(--border); border-radius:4px;
-    background: var(--bg-card); color: var(--text-body);
-    font-family: var(--font-mono); font-size:0.72rem; cursor:pointer;
-    letter-spacing:1px; transition: all 0.2s;
-  }
-  .btn:hover { border-color: var(--glow-cyan); color: var(--glow-cyan); box-shadow:0 0 10px rgba(0,212,255,0.2); }
-  .btn.selected { border-color: var(--glow-cyan); color: var(--glow-cyan); background:rgba(0,212,255,0.1); box-shadow:0 0 10px rgba(0,212,255,0.15); }
-  .btn.danger { border-color: var(--mars-red); color: var(--glow-red); }
+  .btn { padding:7px 12px; border:1px solid var(--border); border-radius:4px; background:var(--bg-card); color:var(--text-body); font-family:var(--font-mono); font-size:0.72rem; cursor:pointer; letter-spacing:1px; transition:all 0.2s; }
+  .btn:hover    { border-color:var(--glow-cyan); color:var(--glow-cyan); box-shadow:0 0 10px rgba(0,212,255,0.2); }
+  .btn.selected { border-color:var(--glow-cyan); color:var(--glow-cyan); background:rgba(0,212,255,0.1); }
+  .btn.danger   { border-color:var(--mars-red); color:var(--glow-red); }
   .btn.danger:hover { background:rgba(255,68,68,0.1); }
-  .btn.success { border-color:var(--glow-green); color:var(--glow-green); background:rgba(0,255,136,0.08); }
-
   .inject-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
-  .inject-btn {
-    padding:8px 6px; border:1px solid var(--border); border-radius:4px;
-    background: var(--bg-card); color: var(--text-dim);
-    font-family: var(--font-mono); font-size:0.65rem; cursor:pointer;
-    text-align:center; transition: all 0.2s; letter-spacing:0.5px;
-  }
+  .inject-btn  { padding:8px 6px; border:1px solid var(--border); border-radius:4px; background:var(--bg-card); color:var(--text-dim); font-family:var(--font-mono); font-size:0.65rem; cursor:pointer; text-align:center; transition:all 0.2s; }
   .inject-btn:hover { border-color:var(--mars-orange); color:var(--mars-orange); background:rgba(230,126,34,0.08); }
-
-  .send-btn {
-    width:100%; padding:10px; margin-top:12px;
-    border:1px solid var(--glow-cyan); border-radius:4px;
-    background: rgba(0,212,255,0.08); color: var(--glow-cyan);
-    font-family: var(--font-display); font-size:0.7rem; font-weight:700;
-    letter-spacing:3px; cursor:pointer; transition:all 0.2s;
-    text-transform:uppercase;
-  }
+  .send-btn { width:100%; padding:10px; margin-top:12px; border:1px solid var(--glow-cyan); border-radius:4px; background:rgba(0,212,255,0.08); color:var(--glow-cyan); font-family:var(--font-display); font-size:0.7rem; font-weight:700; letter-spacing:3px; cursor:pointer; transition:all 0.2s; text-transform:uppercase; }
   .send-btn:hover { background:rgba(0,212,255,0.15); box-shadow:0 0 15px rgba(0,212,255,0.2); }
-  .send-btn:active { transform:scale(0.98); }
-
-  .reason-input {
-    width:100%; padding:7px 10px; margin-top:8px;
-    background:var(--bg-card); border:1px solid var(--border); border-radius:4px;
-    color:var(--text-body); font-family:var(--font-mono); font-size:0.7rem;
-    outline:none; transition:border-color 0.2s;
-  }
+  .reason-input { width:100%; padding:7px 10px; margin-top:8px; background:var(--bg-card); border:1px solid var(--border); border-radius:4px; color:var(--text-body); font-family:var(--font-mono); font-size:0.7rem; outline:none; transition:border-color 0.2s; }
   .reason-input:focus { border-color:var(--glow-cyan); }
   .reason-input::placeholder { color:var(--text-dim); }
 
   /* ── Log ── */
-  .log-wrap { grid-column: 1 / 2; }
-  .log-scroll { height:160px; overflow-y:auto; font-family:var(--font-mono); font-size:0.7rem; }
+  .log-scroll { height:140px; overflow-y:auto; font-family:var(--font-mono); font-size:0.7rem; }
   .log-scroll::-webkit-scrollbar { width:4px; }
-  .log-scroll::-webkit-scrollbar-track { background:transparent; }
   .log-scroll::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
   .log-entry { padding:3px 0; display:flex; gap:10px; border-bottom:1px solid rgba(26,39,68,0.4); }
   .log-time { color:var(--text-dim); min-width:50px; }
-  .log-cat { min-width:72px; }
+  .log-cat  { min-width:72px; }
   .log-cat.INFO     { color:var(--glow-cyan); }
   .log-cat.ACTION   { color:var(--glow-green); }
   .log-cat.ALERT    { color:var(--glow-amber); }
   .log-cat.VIOLATION{ color:var(--glow-red); }
+  .log-cat.CRITICAL { color:var(--glow-red); font-weight:bold; }
+  .log-cat.DEATH    { color:#ff2222; font-weight:bold; }
+  .log-cat.FATAL    { color:#ff0000; font-weight:bold; }
   .log-cat.SYSTEM   { color:var(--text-dim); }
   .log-cat.INJECT   { color:var(--mars-orange); }
   .log-msg { color:var(--text-body); word-break:break-all; }
-
-  /* ── Toast ── */
-  #toast {
-    position:fixed; bottom:24px; right:24px; z-index:100;
-    background:var(--bg-panel); border:1px solid var(--glow-green);
-    border-radius:6px; padding:10px 16px; color:var(--glow-green);
-    font-family:var(--font-mono); font-size:0.75rem;
-    transform:translateY(60px); opacity:0; transition:all 0.3s;
-  }
-  #toast.show { transform:translateY(0); opacity:1; }
-  #toast.error { border-color:var(--glow-red); color:var(--glow-red); }
+  .log-entry.log-death .log-msg { color:#ff4444; }
+  .log-entry.log-fatal .log-msg { color:#ff2222; }
 
   /* ── Utility chart ── */
-  #util-chart { width:100%; height:80px; }
+  #util-chart { width:100%; height:70px; }
 
-  /* ── Solar indicator ── */
+  /* ── Solar bar ── */
   .solar-bar-wrap { height:6px; background:rgba(255,255,255,0.05); border-radius:3px; margin-top:6px; }
   .solar-bar { height:100%; border-radius:3px; background:linear-gradient(90deg,var(--mars-orange),#ffe066); transition:width 0.5s; }
 
-  /* ── Crew ── */
-  .crew-display { display:flex; gap:4px; flex-wrap:wrap; }
-  .crew-icon { font-size:1.2rem; transition:filter 0.3s; }
-  .crew-icon.dead { filter:grayscale(1) opacity(0.3); }
+  /* ── Toast ── */
+  #toast { position:fixed; bottom:24px; right:24px; z-index:100; background:var(--bg-panel); border:1px solid var(--glow-green); border-radius:6px; padding:10px 16px; color:var(--glow-green); font-family:var(--font-mono); font-size:0.75rem; transform:translateY(60px); opacity:0; transition:all 0.3s; }
+  #toast.show  { transform:translateY(0); opacity:1; }
+  #toast.error { border-color:var(--glow-red); color:var(--glow-red); }
+
+  /* ════════════════════════════════════════════
+     MISSION FAILED OVERLAY
+  ════════════════════════════════════════════ */
+  #failure-overlay {
+    position:fixed; inset:0; z-index:200;
+    background:rgba(5,8,16,0.96);
+    display:none; flex-direction:column;
+    align-items:center; justify-content:center;
+    backdrop-filter:blur(6px);
+  }
+  #failure-overlay.visible { display:flex; animation:overlay-in 0.8s ease; }
+  @keyframes overlay-in { from{opacity:0;transform:scale(1.05)} to{opacity:1;transform:scale(1)} }
+
+  .failure-skull { font-size:5rem; margin-bottom:16px; animation:skull-bob 2s infinite; }
+  @keyframes skull-bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+
+  .failure-title {
+    font-family:var(--font-display); font-size:3rem; font-weight:900;
+    color:var(--glow-red); letter-spacing:6px; text-transform:uppercase;
+    text-shadow:0 0 40px rgba(255,68,68,0.7);
+    animation:failure-glow 1.5s infinite;
+  }
+  @keyframes failure-glow { 0%,100%{text-shadow:0 0 40px rgba(255,68,68,0.7)} 50%{text-shadow:0 0 80px rgba(255,68,68,1)} }
+
+  .failure-cause {
+    font-family:var(--font-mono); font-size:1rem; color:var(--glow-amber);
+    margin-top:12px; letter-spacing:2px; text-align:center; max-width:500px;
+  }
+
+  .failure-scorecard {
+    margin-top:32px; background:var(--bg-panel); border:1px solid rgba(192,57,43,0.5);
+    border-radius:8px; padding:24px 40px; min-width:360px;
+  }
+  .scorecard-title { font-family:var(--font-display); font-size:0.65rem; letter-spacing:4px; color:var(--text-dim); margin-bottom:16px; text-align:center; }
+  .scorecard-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--border); font-family:var(--font-mono); }
+  .scorecard-row:last-child { border-bottom:none; }
+  .scorecard-key { color:var(--text-dim); font-size:0.8rem; }
+  .scorecard-val { color:var(--text-bright); font-size:0.85rem; }
+  .scorecard-val.bad { color:var(--glow-red); }
+  .scorecard-val.good { color:var(--glow-green); }
+
+  .failure-restart {
+    margin-top:24px; padding:12px 40px;
+    border:1px solid var(--glow-amber); border-radius:4px;
+    background:rgba(255,179,71,0.08); color:var(--glow-amber);
+    font-family:var(--font-display); font-size:0.75rem; font-weight:700;
+    letter-spacing:4px; cursor:pointer; transition:all 0.2s;
+  }
+  .failure-restart:hover { background:rgba(255,179,71,0.2); box-shadow:0 0 20px rgba(255,179,71,0.3); }
 </style>
 </head>
 <body>
@@ -328,6 +304,7 @@
       <div class="logo">ARES-1 <span>MARS HABITAT CONTROL SYSTEM</span></div>
     </div>
     <div class="status-bar">
+      <div class="mission-pill mission-NOMINAL" id="mission-pill">NOMINAL</div>
       <div class="sim-clock" id="sim-clock">T+0000s</div>
       <div style="font-size:0.7rem;color:var(--text-dim)">POLARIS MANAGED SYSTEM</div>
       <div class="conn-dot" id="conn-dot"></div>
@@ -335,227 +312,254 @@
   </header>
 
   <div class="grid">
+    <div class="col-left">
 
-    <!-- ── Vitals ── -->
-    <div class="panel" id="vitals-panel">
-      <div class="panel-title">⬡ System Vitals</div>
+      <!-- Vitals -->
+      <div class="panel">
+        <div class="panel-title">⬡ System Vitals</div>
 
-      <!-- Event banner -->
-      <div class="event-banner" id="event-banner" style="margin-bottom:14px;">
-        <div class="event-icon" id="event-icon">🌑</div>
-        <div>
-          <div class="event-name" id="event-name">NOMINAL</div>
-          <div class="event-detail" id="event-detail">All systems stable</div>
+        <!-- Event banner -->
+        <div class="event-banner" id="event-banner" style="margin-bottom:14px;">
+          <div class="event-icon" id="event-icon">🌑</div>
+          <div style="flex:1">
+            <div class="event-name" id="event-name">NOMINAL</div>
+            <div class="event-detail" id="event-detail">All systems stable</div>
+          </div>
+          <div class="event-progress-wrap" id="event-prog-wrap" style="display:none;">
+            <div class="event-progress" id="event-progress"></div>
+          </div>
         </div>
-        <div class="event-progress-wrap" id="event-prog-wrap" style="display:none;">
-          <div class="event-progress" id="event-progress"></div>
+
+        <div class="vitals-grid">
+          <div class="vital-card" id="vc-o2">
+            <div class="vital-label">⬡ OXYGEN LEVEL</div>
+            <div class="vital-value ok" id="v-o2">--</div>
+            <div class="vital-bar-wrap"><div class="vital-bar" id="vb-o2" style="width:85%;background:var(--glow-green)"></div></div>
+            <div class="grace-countdown" id="grace-o2"></div>
+            <div class="vital-threshold">SLA: &gt;20% — crew dies after 5 ticks</div>
+          </div>
+          <div class="vital-card" id="vc-pwr">
+            <div class="vital-label">⚡ POWER LEVEL</div>
+            <div class="vital-value ok" id="v-pwr">--</div>
+            <div class="vital-bar-wrap"><div class="vital-bar" id="vb-pwr" style="width:75%;background:var(--glow-green)"></div></div>
+            <div class="grace-countdown" id="grace-pwr"></div>
+            <div class="vital-threshold">SLA: &gt;15% — gen offline after 10 ticks</div>
+          </div>
+          <div class="vital-card" id="vc-heat">
+            <div class="vital-label">🌡 HEAT LEVEL</div>
+            <div class="vital-value ok" id="v-heat">--</div>
+            <div class="vital-bar-wrap"><div class="vital-bar" id="vb-heat" style="width:70%;background:var(--glow-green)"></div></div>
+            <div class="grace-countdown" id="grace-heat"></div>
+            <div class="vital-threshold">SLA: 30%–95% — crew dies after 8 ticks</div>
+          </div>
+          <div class="vital-card" id="vc-hull">
+            <div class="vital-label">🛡 HULL INTEGRITY</div>
+            <div class="vital-value ok" id="v-hull">--</div>
+            <div class="vital-bar-wrap"><div class="vital-bar" id="vb-hull" style="width:100%;background:var(--glow-green)"></div></div>
+            <div class="grace-countdown" id="grace-hull"></div>
+            <div class="vital-threshold">SLA: &gt;40% — BREACH after 6 ticks</div>
+          </div>
+        </div>
+
+        <!-- Solar + crew row -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;">
+          <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:12px;">
+            <div class="vital-label">☀ SOLAR EFFICIENCY</div>
+            <div class="vital-value ok" id="v-solar" style="font-size:1.4rem;">--</div>
+            <div class="solar-bar-wrap"><div class="solar-bar" id="solar-bar" style="width:100%"></div></div>
+          </div>
+          <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:12px;">
+            <div class="vital-label">👨‍🚀 CREW STATUS</div>
+            <div class="crew-grid" id="crew-grid"></div>
+          </div>
         </div>
       </div>
 
-      <div class="vitals-grid">
-        <!-- O2 -->
-        <div class="vital-card" id="vc-o2">
-          <div class="vital-label">⬡ OXYGEN LEVEL</div>
-          <div class="vital-value ok" id="v-o2">--</div>
-          <div class="vital-bar-wrap"><div class="vital-bar" id="vb-o2" style="width:85%;background:var(--glow-green)"></div></div>
-          <div class="vital-threshold">SLA: &gt; 20%</div>
-        </div>
-        <!-- Power -->
-        <div class="vital-card" id="vc-pwr">
-          <div class="vital-label">⚡ POWER LEVEL</div>
-          <div class="vital-value ok" id="v-pwr">--</div>
-          <div class="vital-bar-wrap"><div class="vital-bar" id="vb-pwr" style="width:75%;background:var(--glow-green)"></div></div>
-          <div class="vital-threshold">SLA: &gt; 15%</div>
-        </div>
-        <!-- Heat -->
-        <div class="vital-card" id="vc-heat">
-          <div class="vital-label">🌡 HEAT LEVEL</div>
-          <div class="vital-value ok" id="v-heat">--</div>
-          <div class="vital-bar-wrap"><div class="vital-bar" id="vb-heat" style="width:70%;background:var(--glow-green)"></div></div>
-          <div class="vital-threshold">SLA: 30%–95%</div>
-        </div>
-        <!-- Hull -->
-        <div class="vital-card" id="vc-hull">
-          <div class="vital-label">🛡 HULL INTEGRITY</div>
-          <div class="vital-value ok" id="v-hull">--</div>
-          <div class="vital-bar-wrap"><div class="vital-bar" id="vb-hull" style="width:100%;background:var(--glow-green)"></div></div>
-          <div class="vital-threshold">SLA: &gt; 40%</div>
+      <!-- Infrastructure + Performance -->
+      <div class="panel">
+        <div class="panel-title">⚙ Infrastructure & Performance</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <div>
+            <div class="infra-grid">
+              <div class="infra-item">
+                <div class="infra-item-label">O₂ GENERATORS</div>
+                <div class="infra-dots" id="o2-dots"></div>
+                <div style="font-family:var(--font-mono);font-size:0.62rem;color:var(--text-dim);margin-top:4px;" id="o2-forced-label"></div>
+              </div>
+              <div class="infra-item">
+                <div class="infra-item-label">HEATERS</div>
+                <div class="infra-dots" id="heat-dots"></div>
+              </div>
+              <div class="infra-item">
+                <div class="infra-item-label">POWER MODE</div>
+                <div id="power-mode-pill" style="margin-top:4px;"></div>
+              </div>
+              <div class="infra-item">
+                <div class="infra-item-label">LIFE SUPPORT</div>
+                <div id="priority-pill" style="margin-top:4px;"></div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <div class="perf-row">
+              <span class="perf-label">UTILITY SCORE</span>
+              <span class="perf-value" id="util-score">0.00</span>
+            </div>
+            <div class="perf-row">
+              <span class="perf-label">AVG / TICK</span>
+              <span class="perf-value" id="avg-util">0.00</span>
+            </div>
+            <div class="perf-row">
+              <span class="perf-label">SLA VIOLATIONS</span>
+              <span class="perf-value bad" id="sla-viol">0</span>
+            </div>
+            <div class="perf-row">
+              <span class="perf-label">CREW DEATHS</span>
+              <span class="perf-value bad" id="crew-deaths">0</span>
+            </div>
+            <div class="perf-row">
+              <span class="perf-label">TOTAL TICKS</span>
+              <span class="perf-value" id="total-ticks">0</span>
+            </div>
+            <div style="margin-top:10px;">
+              <canvas id="util-chart"></canvas>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Solar + Crew row -->
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px;">
-        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:12px;">
-          <div class="vital-label">☀ SOLAR EFFICIENCY</div>
-          <div class="vital-value ok" id="v-solar" style="font-size:1.4rem;">--</div>
-          <div class="solar-bar-wrap"><div class="solar-bar" id="solar-bar" style="width:100%"></div></div>
+      <!-- Log -->
+      <div class="panel">
+        <div class="panel-title">◈ Event Log</div>
+        <div class="log-scroll" id="log-scroll"></div>
+      </div>
+
+    </div><!-- /col-left -->
+
+    <div class="col-right">
+
+      <!-- Actions -->
+      <div class="panel">
+        <div class="panel-title">◈ POLARIS Interface</div>
+        <p style="font-size:0.72rem;color:var(--text-dim);margin-bottom:16px;line-height:1.5;">
+          POLARIS sends <code style="color:var(--glow-cyan);font-size:0.68rem;">POST /adapt/composite</code>.<br>
+          Manual controls mirror the same API.
+        </p>
+
+        <div class="action-group">
+          <div class="action-group-title">Power Mode</div>
+          <div class="btn-row">
+            <button class="btn" id="btn-pm-NORMAL"        onclick="selectPower('NORMAL')">NORMAL</button>
+            <button class="btn" id="btn-pm-CONSERVATION"  onclick="selectPower('CONSERVATION')">CONSERVE</button>
+            <button class="btn danger" id="btn-pm-EMERGENCY" onclick="selectPower('EMERGENCY')">EMERGENCY</button>
+          </div>
         </div>
-        <div style="background:var(--bg-card);border:1px solid var(--border);border-radius:6px;padding:12px;">
-          <div class="vital-label">👨‍🚀 CREW STATUS</div>
-          <div class="crew-display" id="crew-display"></div>
-          <div style="font-size:0.7rem;color:var(--text-dim);margin-top:4px;" id="crew-count">6 / 6 active</div>
+
+        <div class="action-group">
+          <div class="action-group-title">O₂ Generators (1–3)</div>
+          <div class="btn-row">
+            <button class="btn" id="btn-o2-1" onclick="selectO2(1)">1 GEN</button>
+            <button class="btn" id="btn-o2-2" onclick="selectO2(2)">2 GEN</button>
+            <button class="btn" id="btn-o2-3" onclick="selectO2(3)">3 GEN</button>
+          </div>
+        </div>
+
+        <div class="action-group">
+          <div class="action-group-title">Heaters (0–3)</div>
+          <div class="btn-row">
+            <button class="btn" id="btn-h-0" onclick="selectHeat(0)">OFF</button>
+            <button class="btn" id="btn-h-1" onclick="selectHeat(1)">1 HTR</button>
+            <button class="btn" id="btn-h-2" onclick="selectHeat(2)">2 HTR</button>
+            <button class="btn" id="btn-h-3" onclick="selectHeat(3)">3 HTR</button>
+          </div>
+        </div>
+
+        <div class="action-group">
+          <div class="action-group-title">Life Support Priority</div>
+          <div class="btn-row">
+            <button class="btn" id="btn-pri-OXYGEN"   onclick="selectPriority('OXYGEN')">OXYGEN</button>
+            <button class="btn" id="btn-pri-HEAT"     onclick="selectPriority('HEAT')">HEAT</button>
+            <button class="btn" id="btn-pri-BALANCED" onclick="selectPriority('BALANCED')">BALANCED</button>
+          </div>
+        </div>
+
+        <input class="reason-input" id="reason-input" type="text" placeholder="Reason / agent name (optional)...">
+        <button class="send-btn" onclick="sendAdaptation()">▶ APPLY ADAPTATION</button>
+
+        <div class="action-group" style="margin-top:20px;">
+          <div class="action-group-title">Inject Disturbance</div>
+          <div class="inject-grid">
+            <button class="inject-btn" onclick="injectEvent('DUST_STORM')">🌪 Dust Storm</button>
+            <button class="inject-btn" onclick="injectEvent('METEOR_STRIKE')">☄ Meteor Strike</button>
+            <button class="inject-btn" onclick="injectEvent('SOLAR_FLARE')">🌟 Solar Flare</button>
+            <button class="inject-btn" onclick="injectEvent('EQUIPMENT_FAULT')">⚠ Equip Fault</button>
+            <button class="inject-btn" onclick="injectEvent('CREW_ACTIVITY')">👨‍🚀 Crew Activity</button>
+            <button class="inject-btn" style="border-color:var(--mars-red);color:var(--glow-red);" onclick="resetSim()">↺ Reset Sim</button>
+          </div>
+        </div>
+
+        <div style="margin-top:16px;padding:10px;background:var(--bg-card);border:1px solid var(--border);border-radius:4px;">
+          <div style="font-size:0.62rem;font-family:var(--font-mono);color:var(--text-dim);margin-bottom:6px;letter-spacing:2px;">REST API</div>
+          <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--glow-cyan);line-height:1.8;">
+            GET  /telemetry<br>
+            GET  /telemetry/vitals<br>
+            GET  /telemetry/history<br>
+            GET  /result<br>
+            POST /adapt/composite<br>
+            POST /control/inject<br>
+            GET  /docs
+          </div>
         </div>
       </div>
+
+    </div><!-- /col-right -->
+  </div>
+
+</div><!-- /wrapper -->
+
+<!-- MISSION FAILED OVERLAY -->
+<div id="failure-overlay">
+  <div class="failure-skull">💀</div>
+  <div class="failure-title">MISSION FAILED</div>
+  <div class="failure-cause" id="failure-cause"></div>
+  <div class="failure-scorecard">
+    <div class="scorecard-title">FINAL SCORECARD</div>
+    <div class="scorecard-row">
+      <span class="scorecard-key">Survived</span>
+      <span class="scorecard-val" id="sc-ticks"></span>
     </div>
-
-    <!-- ── Action Panel ── -->
-    <div class="panel actions-panel">
-      <div class="panel-title">◈ POLARIS Interface</div>
-      <p style="font-size:0.72rem;color:var(--text-dim);margin-bottom:16px;line-height:1.5;">
-        Manual controls for testing. POLARIS should POST to <code style="color:var(--glow-cyan);font-size:0.68rem;">/adapt/composite</code>.
-      </p>
-
-      <!-- Power Mode -->
-      <div class="action-group">
-        <div class="action-group-title">Power Mode</div>
-        <div class="btn-row">
-          <button class="btn" id="btn-pm-NORMAL"       onclick="selectPower('NORMAL')">NORMAL</button>
-          <button class="btn" id="btn-pm-CONSERVATION" onclick="selectPower('CONSERVATION')">CONSERVE</button>
-          <button class="btn danger" id="btn-pm-EMERGENCY"   onclick="selectPower('EMERGENCY')">EMERGENCY</button>
-        </div>
-      </div>
-
-      <!-- O2 Generators -->
-      <div class="action-group">
-        <div class="action-group-title">O₂ Generators (1–3)</div>
-        <div class="btn-row">
-          <button class="btn" id="btn-o2-1" onclick="selectO2(1)">1 GEN</button>
-          <button class="btn" id="btn-o2-2" onclick="selectO2(2)">2 GEN</button>
-          <button class="btn" id="btn-o2-3" onclick="selectO2(3)">3 GEN</button>
-        </div>
-      </div>
-
-      <!-- Heaters -->
-      <div class="action-group">
-        <div class="action-group-title">Heaters (0–3)</div>
-        <div class="btn-row">
-          <button class="btn" id="btn-h-0" onclick="selectHeat(0)">OFF</button>
-          <button class="btn" id="btn-h-1" onclick="selectHeat(1)">1 HTR</button>
-          <button class="btn" id="btn-h-2" onclick="selectHeat(2)">2 HTR</button>
-          <button class="btn" id="btn-h-3" onclick="selectHeat(3)">3 HTR</button>
-        </div>
-      </div>
-
-      <!-- Priority -->
-      <div class="action-group">
-        <div class="action-group-title">Life Support Priority</div>
-        <div class="btn-row">
-          <button class="btn" id="btn-pri-OXYGEN"   onclick="selectPriority('OXYGEN')">OXYGEN</button>
-          <button class="btn" id="btn-pri-HEAT"     onclick="selectPriority('HEAT')">HEAT</button>
-          <button class="btn" id="btn-pri-BALANCED" onclick="selectPriority('BALANCED')">BALANCED</button>
-        </div>
-      </div>
-
-      <input class="reason-input" id="reason-input" type="text" placeholder="Reason / agent name (optional)...">
-      <button class="send-btn" onclick="sendAdaptation()">▶ APPLY ADAPTATION</button>
-
-      <!-- Inject Events -->
-      <div class="action-group" style="margin-top:20px;">
-        <div class="action-group-title">Inject Disturbance</div>
-        <div class="inject-grid">
-          <button class="inject-btn" onclick="injectEvent('DUST_STORM')">🌪 Dust Storm</button>
-          <button class="inject-btn" onclick="injectEvent('METEOR_STRIKE')">☄ Meteor Strike</button>
-          <button class="inject-btn" onclick="injectEvent('SOLAR_FLARE')">🌟 Solar Flare</button>
-          <button class="inject-btn" onclick="injectEvent('EQUIPMENT_FAULT')">⚠ Equip Fault</button>
-          <button class="inject-btn" onclick="injectEvent('CREW_ACTIVITY')">👨‍🚀 Crew Activity</button>
-          <button class="inject-btn" style="border-color:var(--mars-red);color:var(--glow-red);" onclick="resetSim()">↺ Reset Sim</button>
-        </div>
-      </div>
-
-      <!-- API Quick ref -->
-      <div style="margin-top:16px;padding:10px;background:var(--bg-card);border:1px solid var(--border);border-radius:4px;">
-        <div style="font-size:0.62rem;font-family:var(--font-mono);color:var(--text-dim);margin-bottom:6px;letter-spacing:2px;">REST API</div>
-        <div style="font-family:var(--font-mono);font-size:0.65rem;color:var(--glow-cyan);line-height:1.8;">
-          GET  /telemetry<br>
-          GET  /telemetry/vitals<br>
-          GET  /telemetry/history<br>
-          POST /adapt/composite<br>
-          POST /control/inject<br>
-          GET  /docs
-        </div>
-      </div>
+    <div class="scorecard-row">
+      <span class="scorecard-key">Crew Survived</span>
+      <span class="scorecard-val" id="sc-crew"></span>
     </div>
-
-    <!-- ── Infrastructure ── -->
-    <div class="panel">
-      <div class="panel-title">⚙ Infrastructure</div>
-      <div class="infra-grid">
-        <div class="infra-item">
-          <div class="infra-item-label">O₂ GENERATORS</div>
-          <div class="infra-dots" id="o2-dots"></div>
-        </div>
-        <div class="infra-item">
-          <div class="infra-item-label">HEATERS</div>
-          <div class="infra-dots" id="heat-dots"></div>
-        </div>
-        <div class="infra-item">
-          <div class="infra-item-label">POWER MODE</div>
-          <div id="power-mode-pill" style="margin-top:4px;"></div>
-        </div>
-        <div class="infra-item">
-          <div class="infra-item-label">LIFE SUPPORT</div>
-          <div id="priority-pill" style="margin-top:4px;"></div>
-        </div>
-      </div>
-
-      <!-- Performance -->
-      <div style="margin-top:14px;">
-        <div class="perf-row">
-          <span class="perf-label">UTILITY SCORE</span>
-          <span class="perf-value" id="util-score">0.00</span>
-        </div>
-        <div class="perf-row">
-          <span class="perf-label">AVG / TICK</span>
-          <span class="perf-value" id="avg-util">0.00</span>
-        </div>
-        <div class="perf-row">
-          <span class="perf-label">SLA VIOLATIONS</span>
-          <span class="perf-value bad" id="sla-viol">0</span>
-        </div>
-        <div class="perf-row">
-          <span class="perf-label">TOTAL TICKS</span>
-          <span class="perf-value" id="total-ticks">0</span>
-        </div>
-      </div>
-
-      <!-- Utility sparkline -->
-      <div style="margin-top:12px;">
-        <div class="panel-title" style="margin-bottom:6px;">Utility History</div>
-        <canvas id="util-chart"></canvas>
-      </div>
+    <div class="scorecard-row">
+      <span class="scorecard-key">SLA Violations</span>
+      <span class="scorecard-val bad" id="sc-violations"></span>
     </div>
-
-    <!-- ── Log ── -->
-    <div class="panel log-wrap">
-      <div class="panel-title">◈ Event Log</div>
-      <div class="log-scroll" id="log-scroll"></div>
+    <div class="scorecard-row">
+      <span class="scorecard-key">Total Utility</span>
+      <span class="scorecard-val" id="sc-utility"></span>
     </div>
-
-  </div><!-- /grid -->
+    <div class="scorecard-row">
+      <span class="scorecard-key">Avg Utility/Tick</span>
+      <span class="scorecard-val" id="sc-avg"></span>
+    </div>
+  </div>
+  <button class="failure-restart" onclick="resetSim()">↺ RESTART MISSION</button>
 </div>
 
 <div id="toast"></div>
 
 <script>
-// ─────────────────────────────────────────────
-// Config
-// ─────────────────────────────────────────────
 const API = 'http://localhost:8000';
 const POLL_MS = 2000;
 
-// ─────────────────────────────────────────────
-// State
-// ─────────────────────────────────────────────
-let pendingPowerMode = null;
-let pendingO2 = null;
-let pendingHeat = null;
-let pendingPriority = null;
+let pendingPowerMode = null, pendingO2 = null, pendingHeat = null, pendingPriority = null;
 let utilHistory = [];
 let lastLogCount = 0;
+let failureShown = false;
 
-// ─────────────────────────────────────────────
-// Polling
-// ─────────────────────────────────────────────
+// ── Polling ──────────────────────────────────
 async function poll() {
   try {
     const r = await fetch(`${API}/telemetry`);
@@ -563,14 +567,16 @@ async function poll() {
     const d = await r.json();
     updateUI(d);
     setConnected(true);
-  } catch(e) {
-    setConnected(false);
-  }
+    if (d.mission.status === 'FAILED' && !failureShown) {
+      failureShown = true;
+      showFailure(d);
+    }
+  } catch(e) { setConnected(false); }
 }
 
 async function pollLog() {
   try {
-    const r = await fetch(`${API}/telemetry/history?n=80`);
+    const r = await fetch(`${API}/telemetry/history?n=100`);
     const d = await r.json();
     if (d.entries.length !== lastLogCount) {
       lastLogCount = d.entries.length;
@@ -580,149 +586,203 @@ async function pollLog() {
 }
 
 function setConnected(ok) {
-  const dot = document.getElementById('conn-dot');
-  dot.className = 'conn-dot' + (ok ? '' : ' offline');
+  document.getElementById('conn-dot').className = 'conn-dot' + (ok ? '' : ' offline');
 }
 
-// ─────────────────────────────────────────────
-// UI Rendering
-// ─────────────────────────────────────────────
+// ── Event metadata ────────────────────────────
 const EVENT_META = {
-  NOMINAL:        { icon:'🌑', label:'NOMINAL', cls:'' },
-  DUST_STORM:     { icon:'🌪', label:'DUST STORM', cls:'active-event' },
-  METEOR_STRIKE:  { icon:'☄',  label:'METEOR STRIKE', cls:'critical-event' },
-  CREW_ACTIVITY:  { icon:'👨‍🚀', label:'CREW ACTIVITY', cls:'active-event' },
-  SOLAR_FLARE:    { icon:'🌟', label:'SOLAR FLARE', cls:'active-event' },
-  EQUIPMENT_FAULT:{ icon:'⚠',  label:'EQUIP FAULT', cls:'active-event' },
+  NOMINAL:        { icon:'🌑', label:'NOMINAL',         cls:'' },
+  DUST_STORM:     { icon:'🌪', label:'DUST STORM',      cls:'active-event' },
+  METEOR_STRIKE:  { icon:'☄',  label:'METEOR STRIKE',   cls:'critical-event' },
+  CREW_ACTIVITY:  { icon:'👨‍🚀', label:'CREW ACTIVITY',  cls:'active-event' },
+  SOLAR_FLARE:    { icon:'🌟', label:'SOLAR FLARE',      cls:'active-event' },
+  EQUIPMENT_FAULT:{ icon:'⚠',  label:'EQUIP FAULT',     cls:'active-event' },
+  HULL_BREACH:    { icon:'💥', label:'HULL BREACH — DECOMPRESSION', cls:'breach-event' },
 };
 
+// ── Vital state logic ─────────────────────────
 function vitalState(val, min, max) {
   if (max !== undefined) {
-    // heat: needs to be in range
-    if (val < min + 0.05 || val > max - 0.05) return 'danger';
-    if (val < min + 0.15 || val > max - 0.1) return 'warn';
+    if (val <= min || val >= max)       return 'danger';
+    if (val < min + 0.12 || val > max - 0.08) return 'warn';
     return 'ok';
   }
-  if (val <= min) return 'danger';
-  if (val <= min * 1.5) return 'warn';
+  if (val <= min)           return 'danger';
+  if (val <= min * 1.6)     return 'warn';
   return 'ok';
 }
 
 function setVital(id, val, min, max) {
   const pct = Math.round(val * 100);
   const state = vitalState(val, min, max);
-  const colors = { ok: 'var(--glow-green)', warn: 'var(--glow-amber)', danger: 'var(--glow-red)' };
-  const el = document.getElementById('v-' + id);
-  const bar = document.getElementById('vb-' + id);
+  const colors = { ok:'var(--glow-green)', warn:'var(--glow-amber)', danger:'var(--glow-red)' };
+  document.getElementById('v-' + id).textContent = pct + '%';
+  document.getElementById('v-' + id).className = 'vital-value ' + state;
+  document.getElementById('vb-' + id).style.width = pct + '%';
+  document.getElementById('vb-' + id).style.background = colors[state];
   const card = document.getElementById('vc-' + id);
-  el.textContent = pct + '%';
-  el.className = 'vital-value ' + state;
-  bar.style.width = pct + '%';
-  bar.style.background = colors[state];
   card.className = 'vital-card ' + (state === 'danger' ? 'critical' : state === 'warn' ? 'warning' : '');
 }
 
-function renderDots(containerId, active, total, color) {
-  const el = document.getElementById(containerId);
+function setGrace(id, ticks, grace) {
+  const el = document.getElementById('grace-' + id);
+  if (ticks > 0) {
+    const remaining = grace - ticks;
+    if (remaining > 0) {
+      el.textContent = `⚠ DIES IN ${remaining} TICK${remaining !== 1 ? 'S' : ''} — INTERVENE NOW`;
+    } else {
+      el.textContent = `☠ CONSEQUENCE ACTIVE`;
+    }
+    el.className = 'grace-countdown visible';
+  } else {
+    el.className = 'grace-countdown';
+  }
+}
+
+// ── Crew rendering ────────────────────────────
+function renderCrew(alive, total, o2Ticks, heatTicks) {
+  const el = document.getElementById('crew-grid');
+  el.innerHTML = '';
+  const dying = o2Ticks > 0 || heatTicks > 0;
+  for (let i = 0; i < total; i++) {
+    const m = document.createElement('div');
+    const isAlive = i < alive;
+    const isDying = isAlive && dying;
+    m.className = 'crew-member ' + (isAlive ? (isDying ? 'dying' : 'alive') : 'dead');
+    m.innerHTML = `<span>👨‍🚀</span><span class="crew-status-label">${isAlive ? (isDying ? 'DANGER' : 'OK') : 'DEAD'}</span>`;
+    el.appendChild(m);
+  }
+}
+
+// ── Infra dots ────────────────────────────────
+function renderGenDots(active, total, forcedOffline) {
+  const el = document.getElementById('o2-dots');
+  el.innerHTML = '';
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    const isForced = i >= (active - forcedOffline);
+    const isActive = i < active && !isForced;
+    if (i < (active - forcedOffline)) {
+      d.className = 'infra-dot active';
+    } else if (i < active) {
+      d.className = 'infra-dot offline';  // forced offline
+    } else {
+      d.className = 'infra-dot inactive';
+    }
+    el.appendChild(d);
+  }
+  const label = document.getElementById('o2-forced-label');
+  if (forcedOffline > 0) {
+    label.textContent = `${forcedOffline} FORCED OFFLINE`;
+    label.style.color = 'var(--glow-red)';
+  } else {
+    label.textContent = '';
+  }
+}
+
+function renderHeatDots(active, total) {
+  const el = document.getElementById('heat-dots');
   el.innerHTML = '';
   for (let i = 0; i < total; i++) {
     const d = document.createElement('div');
     d.className = 'infra-dot ' + (i < active ? 'active' : 'inactive');
-    if (i < active) d.style.background = color || 'var(--glow-green)';
+    if (i < active) d.style.background = 'var(--glow-amber)';
     el.appendChild(d);
   }
 }
 
+// ── Main UI update ────────────────────────────
 function updateUI(d) {
-  const v = d.vitals;
-  const env = d.environment;
-  const infra = d.infrastructure;
+  const v    = d.vitals;
+  const env  = d.environment;
+  const infra= d.infrastructure;
   const perf = d.performance;
+  const warn = d.warnings;
+  const crew = d.crew;
 
   document.getElementById('sim-clock').textContent = 'T+' + String(d.simulation_time).padStart(4,'0') + 's';
 
+  // Mission pill
+  const pill = document.getElementById('mission-pill');
+  pill.textContent  = d.mission.status;
+  pill.className    = 'mission-pill mission-' + d.mission.status;
+
   // Vitals
-  setVital('o2',  v.oxygen_level,   0.20);
-  setVital('pwr', v.power_level,    0.15);
-  setVital('heat',v.heat_level,     0.30, 0.95);
-  setVital('hull',v.hull_integrity, 0.40);
+  setVital('o2',   v.oxygen_level,   0.20);
+  setVital('pwr',  v.power_level,    0.15);
+  setVital('heat', v.heat_level,     0.30, 0.95);
+  setVital('hull', v.hull_integrity, 0.40);
+
+  // Grace countdowns
+  setGrace('o2',   warn.ticks_o2_critical,    5);
+  setGrace('pwr',  warn.ticks_power_critical, 10);
+  setGrace('heat', warn.ticks_heat_critical,   8);
+  setGrace('hull', warn.ticks_hull_critical,   6);
 
   // Solar
-  const solarPct = Math.round(env.solar_efficiency * 100);
-  const solarColor = env.solar_efficiency > 0.8 ? 'var(--glow-amber)' : env.solar_efficiency > 0.4 ? 'var(--glow-amber)' : 'var(--glow-red)';
-  document.getElementById('v-solar').textContent = solarPct + '%';
-  document.getElementById('v-solar').style.color = solarColor;
-  document.getElementById('solar-bar').style.width = solarPct + '%';
+  const sp = Math.round(env.solar_efficiency * 100);
+  document.getElementById('v-solar').textContent = sp + '%';
+  document.getElementById('v-solar').style.color = sp > 60 ? 'var(--glow-amber)' : 'var(--glow-red)';
+  document.getElementById('solar-bar').style.width = sp + '%';
 
   // Crew
-  const crew = document.getElementById('crew-display');
-  crew.innerHTML = '';
-  for (let i = 0; i < d.crew.total; i++) {
-    const s = document.createElement('span');
-    s.className = 'crew-icon' + (i < d.crew.alive ? '' : ' dead');
-    s.textContent = '👨‍🚀';
-    crew.appendChild(s);
-  }
-  document.getElementById('crew-count').textContent = `${d.crew.alive} / ${d.crew.total} active`;
+  renderCrew(crew.alive, crew.total, warn.ticks_o2_critical, warn.ticks_heat_critical);
 
   // Event banner
-  const em = EVENT_META[env.active_event] || EVENT_META.NOMINAL;
+  const isBreach = warn.hull_breach_active;
+  const em = isBreach ? EVENT_META.HULL_BREACH : (EVENT_META[env.active_event] || EVENT_META.NOMINAL);
   const banner = document.getElementById('event-banner');
   banner.className = 'event-banner ' + em.cls;
   document.getElementById('event-icon').textContent = em.icon;
   document.getElementById('event-name').textContent = em.label;
-
-  const isActive = env.active_event !== 'NOMINAL' && env.event_ticks_remaining > 0;
-  if (isActive) {
-    document.getElementById('event-detail').textContent = `Intensity: ${Math.round(env.event_intensity * 100)}% — ${env.event_ticks_remaining} ticks remaining`;
+  if (em.label !== 'NOMINAL' && env.event_ticks_remaining > 0) {
+    document.getElementById('event-detail').textContent =
+      `Intensity: ${Math.round(env.event_intensity * 100)}% — ${env.event_ticks_remaining} ticks remaining`;
     document.getElementById('event-prog-wrap').style.display = 'block';
-    document.getElementById('event-progress').style.width = (env.event_ticks_remaining / 30 * 100) + '%';
+    document.getElementById('event-progress').style.width = Math.min(100, env.event_ticks_remaining / 30 * 100) + '%';
   } else {
     document.getElementById('event-detail').textContent = 'All systems stable';
     document.getElementById('event-prog-wrap').style.display = 'none';
   }
 
   // Infrastructure
-  renderDots('o2-dots',   infra.oxygen_generators, 3, 'var(--glow-cyan)');
-  renderDots('heat-dots', infra.active_heaters,    3, 'var(--glow-amber)');
+  renderGenDots(infra.oxygen_generators, 3, warn.forced_gens_offline);
+  renderHeatDots(infra.active_heaters, 3);
+  document.getElementById('power-mode-pill').innerHTML  = `<span class="mode-pill mode-${infra.power_mode}">${infra.power_mode}</span>`;
+  document.getElementById('priority-pill').innerHTML    = `<span class="priority-pill">${infra.life_support_priority}</span>`;
 
-  document.getElementById('power-mode-pill').innerHTML =
-    `<span class="mode-pill mode-${infra.power_mode}">${infra.power_mode}</span>`;
-  document.getElementById('priority-pill').innerHTML =
-    `<span class="priority-pill">${infra.life_support_priority}</span>`;
-
-  // Sync buttons with current state (if no pending)
-  if (!pendingPowerMode) highlightSelected('btn-pm', infra.power_mode);
-  if (!pendingO2) highlightSelected('btn-o2', infra.oxygen_generators);
-  if (!pendingHeat) highlightSelected('btn-h', infra.active_heaters);
-  if (!pendingPriority) highlightSelected('btn-pri', infra.life_support_priority);
+  // Sync buttons
+  if (!pendingPowerMode) highlightSelected('btn-pm',  infra.power_mode);
+  if (!pendingO2)        highlightSelected('btn-o2',  infra.oxygen_generators);
+  if (!pendingHeat)      highlightSelected('btn-h',   infra.active_heaters);
+  if (!pendingPriority)  highlightSelected('btn-pri', infra.life_support_priority);
 
   // Performance
-  document.getElementById('util-score').textContent = perf.utility_score.toFixed(2);
-  document.getElementById('avg-util').textContent   = perf.avg_utility_per_tick.toFixed(4);
-  const violEl = document.getElementById('sla-viol');
-  violEl.textContent = perf.sla_violations;
-  violEl.className = 'perf-value' + (perf.sla_violations > 0 ? ' bad' : '');
+  document.getElementById('util-score').textContent  = perf.utility_score.toFixed(2);
+  document.getElementById('avg-util').textContent    = perf.avg_utility_per_tick.toFixed(4);
+  document.getElementById('sla-viol').textContent    = perf.sla_violations;
+  document.getElementById('crew-deaths').textContent = perf.crew_deaths;
   document.getElementById('total-ticks').textContent = perf.total_ticks;
 
-  // Utility history
+  // Utility sparkline
   utilHistory.push(perf.avg_utility_per_tick);
   if (utilHistory.length > 60) utilHistory.shift();
   drawSparkline();
 }
 
 function highlightSelected(prefix, val) {
-  const key = prefix + '-' + val;
   document.querySelectorAll(`[id^="${prefix}-"]`).forEach(b => {
-    b.classList.toggle('selected', b.id === key);
+    b.classList.toggle('selected', b.id === prefix + '-' + val);
   });
 }
 
+// ── Log ───────────────────────────────────────
 function renderLog(entries) {
   const el = document.getElementById('log-scroll');
   el.innerHTML = [...entries].reverse().map(e => {
-    const t = String(e.tick).padStart(4, '0');
-    return `<div class="log-entry">
+    const t = String(e.tick).padStart(4,'0');
+    const isDeath = e.category === 'DEATH' || e.category === 'FATAL';
+    return `<div class="log-entry ${isDeath ? 'log-' + e.category.toLowerCase() : ''}">
       <span class="log-time">T+${t}</span>
       <span class="log-cat ${e.category}">[${e.category}]</span>
       <span class="log-msg">${e.message}</span>
@@ -730,141 +790,100 @@ function renderLog(entries) {
   }).join('');
 }
 
-// ─────────────────────────────────────────────
-// Sparkline
-// ─────────────────────────────────────────────
+// ── Sparkline ─────────────────────────────────
 function drawSparkline() {
   const canvas = document.getElementById('util-chart');
   const ctx = canvas.getContext('2d');
-  const W = canvas.offsetWidth;
-  const H = 80;
-  canvas.width = W;
-  canvas.height = H;
-
-  ctx.clearRect(0, 0, W, H);
-
+  const W = canvas.offsetWidth; const H = 70;
+  canvas.width = W; canvas.height = H;
+  ctx.clearRect(0,0,W,H);
   if (utilHistory.length < 2) return;
-
-  const min = 0, max = 1;
   const step = W / (utilHistory.length - 1);
-
-  // Grid lines
-  ctx.strokeStyle = 'rgba(26,39,68,0.8)'; ctx.lineWidth = 1;
-  [0.25, 0.5, 0.75, 1.0].forEach(v => {
-    const y = H - (v * H);
-    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+  [0.25,0.5,0.75,1.0].forEach(v => {
+    ctx.strokeStyle='rgba(26,39,68,0.8)'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(0,H - v*H); ctx.lineTo(W,H - v*H); ctx.stroke();
   });
-
-  // Fill
-  const grad = ctx.createLinearGradient(0, 0, 0, H);
-  grad.addColorStop(0, 'rgba(0,212,255,0.3)');
-  grad.addColorStop(1, 'rgba(0,212,255,0.0)');
-  ctx.fillStyle = grad;
-  ctx.beginPath();
-  ctx.moveTo(0, H);
-  utilHistory.forEach((v, i) => {
-    const x = i * step;
-    const y = H - (v / max * H);
-    if (i === 0) ctx.lineTo(x, y); else ctx.lineTo(x, y);
-  });
-  ctx.lineTo((utilHistory.length - 1) * step, H);
-  ctx.closePath(); ctx.fill();
-
-  // Line
-  ctx.strokeStyle = 'rgba(0,212,255,0.9)'; ctx.lineWidth = 1.5;
-  ctx.beginPath();
-  utilHistory.forEach((v, i) => {
-    const x = i * step;
-    const y = H - (v / max * H);
-    if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-  });
+  const grad = ctx.createLinearGradient(0,0,0,H);
+  grad.addColorStop(0,'rgba(0,212,255,0.3)'); grad.addColorStop(1,'rgba(0,212,255,0)');
+  ctx.fillStyle=grad; ctx.beginPath(); ctx.moveTo(0,H);
+  utilHistory.forEach((v,i) => { const x=i*step, y=H-v*H; if(i===0)ctx.lineTo(x,y); else ctx.lineTo(x,y); });
+  ctx.lineTo((utilHistory.length-1)*step,H); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle='rgba(0,212,255,0.9)'; ctx.lineWidth=1.5; ctx.beginPath();
+  utilHistory.forEach((v,i) => { const x=i*step, y=H-v*H; if(i===0)ctx.moveTo(x,y); else ctx.lineTo(x,y); });
   ctx.stroke();
 }
 
-// ─────────────────────────────────────────────
-// Actions
-// ─────────────────────────────────────────────
-function selectPower(mode) {
-  pendingPowerMode = mode;
-  highlightSelected('btn-pm', mode);
+// ── Mission Failed overlay ────────────────────
+function showFailure(d) {
+  document.getElementById('failure-cause').textContent   = d.mission.failure_cause;
+  document.getElementById('sc-ticks').textContent        = d.mission.end_tick + ' ticks';
+  document.getElementById('sc-crew').textContent         = `${d.crew.alive} / ${d.crew.total}`;
+  document.getElementById('sc-violations').textContent   = d.performance.sla_violations;
+  document.getElementById('sc-utility').textContent      = d.performance.utility_score.toFixed(2);
+  document.getElementById('sc-avg').textContent          = d.performance.avg_utility_per_tick.toFixed(4);
+
+  const crewEl = document.getElementById('sc-crew');
+  crewEl.className = d.crew.alive === 0 ? 'scorecard-val bad' : d.crew.alive < d.crew.total ? 'scorecard-val' : 'scorecard-val good';
+
+  document.getElementById('failure-overlay').classList.add('visible');
 }
-function selectO2(n) {
-  pendingO2 = n;
-  highlightSelected('btn-o2', n);
-}
-function selectHeat(n) {
-  pendingHeat = n;
-  highlightSelected('btn-h', n);
-}
-function selectPriority(p) {
-  pendingPriority = p;
-  highlightSelected('btn-pri', p);
-}
+
+// ── Actions ───────────────────────────────────
+function selectPower(m)    { pendingPowerMode=m;  highlightSelected('btn-pm',m);  }
+function selectO2(n)       { pendingO2=n;          highlightSelected('btn-o2',n);  }
+function selectHeat(n)     { pendingHeat=n;        highlightSelected('btn-h',n);   }
+function selectPriority(p) { pendingPriority=p;    highlightSelected('btn-pri',p); }
 
 async function sendAdaptation() {
   const body = {};
-  if (pendingPowerMode) body.power_mode = pendingPowerMode;
-  if (pendingO2 !== null) body.oxygen_generators = pendingO2;
-  if (pendingHeat !== null) body.active_heaters = pendingHeat;
-  if (pendingPriority) body.life_support_priority = pendingPriority;
+  if (pendingPowerMode)    body.power_mode = pendingPowerMode;
+  if (pendingO2 !== null)  body.oxygen_generators = pendingO2;
+  if (pendingHeat !== null)body.active_heaters = pendingHeat;
+  if (pendingPriority)     body.life_support_priority = pendingPriority;
   body.reason = document.getElementById('reason-input').value || 'manual';
-
   if (Object.keys(body).length <= 1) { showToast('Select at least one action', true); return; }
-
   try {
-    const r = await fetch(`${API}/adapt/composite`, {
-      method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)
-    });
-    const d = await r.json();
+    const r = await fetch(`${API}/adapt/composite`, { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) });
+    if (!r.ok) { const e = await r.json(); throw new Error(e.detail || r.status); }
     pendingPowerMode = pendingO2 = pendingHeat = pendingPriority = null;
     document.getElementById('reason-input').value = '';
     showToast('Adaptation applied ✓');
     await poll();
-  } catch(e) {
-    showToast('Request failed: ' + e.message, true);
-  }
+  } catch(e) { showToast('Error: ' + e.message, true); }
 }
 
 async function injectEvent(type) {
   try {
     await fetch(`${API}/control/inject?event_type=${type}&intensity=0.75&duration=18`, { method:'POST' });
-    showToast('Event injected: ' + type);
+    showToast('Injected: ' + type);
     await poll(); await pollLog();
-  } catch(e) {
-    showToast('Inject failed', true);
-  }
+  } catch(e) { showToast('Inject failed', true); }
 }
 
 async function resetSim() {
-  if (!confirm('Reset the simulation?')) return;
   try {
     await fetch(`${API}/control/reset`, { method:'POST' });
-    utilHistory = [];
-    showToast('Simulation reset ↺');
+    failureShown = false;
+    utilHistory  = [];
+    document.getElementById('failure-overlay').classList.remove('visible');
+    showToast('Mission reset ↺');
     await poll(); await pollLog();
-  } catch(e) {
-    showToast('Reset failed', true);
-  }
+  } catch(e) { showToast('Reset failed', true); }
 }
 
-// ─────────────────────────────────────────────
-// Toast
-// ─────────────────────────────────────────────
+// ── Toast ─────────────────────────────────────
 let toastTimer;
 function showToast(msg, err=false) {
   const t = document.getElementById('toast');
   t.textContent = msg;
-  t.className = 'show' + (err ? ' error' : '');
+  t.className   = 'show' + (err ? ' error' : '');
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.className = '', 3000);
 }
 
-// ─────────────────────────────────────────────
-// Boot
-// ─────────────────────────────────────────────
-poll();
-pollLog();
-setInterval(poll, POLL_MS);
+// ── Boot ──────────────────────────────────────
+poll(); pollLog();
+setInterval(poll,    POLL_MS);
 setInterval(pollLog, POLL_MS);
 </script>
 </body>
